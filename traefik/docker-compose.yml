@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  traefik:
+    image: "traefik:latest"
+    container_name: "traefik"
+
+    restart: always
+    network_mode: host
+
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.address=:80"
+      - "--certificatesresolvers.myresolver.acme.email=example@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--accesslog=true"
+      - "--log.level=DEBUG"
+
+    ports:
+      - "443:443"
+      - "80:80"
+      - "9008:9008"
+      - "8080:8080"
+
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "letsencrypt:/letsencrypt/"
+      - "./logs/:/logs/"
+
+volumes:
+  letsencrypt: {}

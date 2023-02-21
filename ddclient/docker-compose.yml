@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  ddclient:
+    image: lscr.io/linuxserver/ddclient:latest
+
+    container_name: ddclient
+
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Rome
+
+    volumes:
+      - ./confdir:/config
+
+    restart: always

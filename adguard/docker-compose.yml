@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  adguardhome:
+    image: adguard/adguardhome
+    container_name: "adguard-home"
+    restart: always
+
+    ports:
+      - 192.168.1.140:53:53/tcp # DNS
+      - 192.168.1.140:53:53/udp
+      - 784:784/udp # DNS over QUIC
+      - 853:853/tcp # DNS over TLS
+      - 3000:3000/tcp # Initial installation
+      - 9005:80/tcp # Dashboard
+      - 9006:443/tcp # DNS over HTTPs
+
+    volumes:
+      - ./workdir:/opt/adguardhome/work
+      - ./confdir:/opt/adguardhome/conf
+
+    dns:
+      - 127.0.0.1
+      - 8.8.8.8
+      - 8.8.4.4
+      - 1.1.1.1
+
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.adguard-home.rule=Host(`adguard.example.com`)
+      - traefik.http.routers.adguard-home.entrypoints=websecure
+      - traefik.http.routers.adguard-home.tls.certresolver=myresolver
+      - traefik.http.routers.adguard-home.service=adguard-home
+      - traefik.http.services.adguard-home.loadbalancer.server.port=80
